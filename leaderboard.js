@@ -5,6 +5,13 @@ if (Meteor.isClient) {
             return PlayerList.find();
         }
     });
+
+    Template.leaderboard.events({
+        'click .player': function() {
+            var playerId = this._id;
+            Session.set('selectedPlayer', playerId);
+        }
+    });
 }
 
 
