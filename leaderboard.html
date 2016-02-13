@@ -1,0 +1,22 @@
+<head>
+    <title>Leaderboard</title>
+</head>
+
+<body>
+    <h1>Leaderboard</h1>
+    {{> leaderboard}}
+    <!-- {{> hello}} -->
+</body>
+
+<template name="leaderboard">
+    <ul>
+        {{#each player}}
+            <li>{{name}}: {{score}}</li>
+        {{/each}}
+    </ul>
+</template>
+
+<!-- <template name="hello">
+    <button>Click Me</button>
+    <p>You've pressed the button {{counter}} times.</p>
+</template> -->
