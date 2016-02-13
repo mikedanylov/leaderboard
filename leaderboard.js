@@ -2,7 +2,7 @@ if (Meteor.isClient) {
     // template helpers should be inside client block
     Template.leaderboard.helpers({
         player: function() {
-            return PlayerList.find();
+            return PlayerList.find({}, {sort: {score: -1, name: 1} });
         },
         selectedClass: function() {
             var playerId = this._id;
@@ -10,6 +10,10 @@ if (Meteor.isClient) {
             if (playerId === selectedPlayer) {
                 return 'selected';
             }
+        },
+        showSelectedPlayer: function() {
+            var selectedPlayer = Session.get('selectedPlayer');
+            return PlayerList.findOne(selectedPlayer);
         }
     });
 
@@ -25,6 +29,15 @@ if (Meteor.isClient) {
         'click .decrement': function() {
             var selectedPlayer = Session.get('selectedPlayer');
             PlayerList.update(selectedPlayer, {$inc: {score: -5} });
+        }
+    });
+
+    Template.addPlayerForm.events({
+        'submit form': function(e) {
+            e.preventDefault(); // no page refresh
+            var playerName = e.target.playerName.value;
+            console.log(playerName);
+            PlayerList.insert({name: playerName, score: 0});
         }
     });
 }

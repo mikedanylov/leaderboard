@@ -16,13 +16,19 @@
             </li>
         {{/each}}
     </ul>
-    <input type="button" class="increment" value="Give 5
- Points">
-    <input type="button" class="decrement" value="Take 5
- Points">
+    {{#if showSelectedPlayer}}
+        SelectedPlayer: {{showSelectedPlayer.name}}
+    {{/if}}
+    <br><br>
+    <input type="button" class="increment" value="Give 5 Points">
+    <input type="button" class="decrement" value="Take 5 Points">
+    <br><br>
+    {{> addPlayerForm}}
 </template>
 
-<!-- <template name="hello">
-    <button>Click Me</button>
-    <p>You've pressed the button {{counter}} times.</p>
-</template> -->
+<template name="addPlayerForm">
+    <form>
+        <input type="text" name="playerName">
+        <input type="submit" value="Add Player">
+    </form>
+</template>
