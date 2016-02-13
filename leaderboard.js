@@ -2,7 +2,9 @@ if (Meteor.isClient) {
     // template helpers should be inside client block
     Template.leaderboard.helpers({
         player: function() {
-            return PlayerList.find({}, {sort: {score: -1, name: 1} });
+            var currentUserId = Meteor.userId();
+            return PlayerList.find({createdBy: currentUserId},
+                {sort: {score: -1, name: 1} });
         },
         selectedClass: function() {
             var playerId = this._id;
@@ -39,9 +41,13 @@ if (Meteor.isClient) {
     Template.addPlayerForm.events({
         'submit form': function(e) {
             e.preventDefault(); // no page refresh
-            var playerName = e.target.playerName.value;
-            console.log(playerName);
-            PlayerList.insert({name: playerName, score: 0});
+            var playerName = e.target.playerName.value,
+                currentUserId = Meteor.userId();
+            PlayerList.insert({
+                name: playerName,
+                score: 0,
+                createdBy: currentUserId
+            });
         }
     });
 }
