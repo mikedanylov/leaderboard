@@ -1,10 +1,14 @@
+PlayersList = new Mongo.Collection('players');
+
 if (Meteor.isClient) {
+
     Meteor.subscribe('thePlayers');
+
     // template helpers should be inside client block
     Template.leaderboard.helpers({
         player: function() {
             var currentUserId = Meteor.userId();
-            return PlayerList.find({}, {sort: {score: -1, name: 1} });
+            return PlayersList.find({}, {sort: {score: -1, name: 1} });
         },
         selectedClass: function() {
             var playerId = this._id;
@@ -15,7 +19,7 @@ if (Meteor.isClient) {
         },
         showSelectedPlayer: function() {
             var selectedPlayer = Session.get('selectedPlayer');
-            return PlayerList.findOne(selectedPlayer);
+            return PlayersList.findOne(selectedPlayer);
         }
     });
 
@@ -26,38 +30,55 @@ if (Meteor.isClient) {
         },
         'click .increment': function() {
             var selectedPlayer = Session.get('selectedPlayer');
-            PlayerList.update(selectedPlayer, {$inc: {score: 5} });
+            Meteor.call('modifyPlayerScore', selectedPlayer, 5);
         },
         'click .decrement': function() {
             var selectedPlayer = Session.get('selectedPlayer');
-            PlayerList.update(selectedPlayer, {$inc: {score: -5} });
+            Meteor.call('modifyPlayerScore', selectedPlayer, 5);
         },
         'click .remove': function() {
             var selectedPlayer = Session.get('selectedPlayer');
-            PlayerList.remove(selectedPlayer);
+            Meteor.call('removePlayerData', selectedPlayer);
         }
     });
 
     Template.addPlayerForm.events({
         'submit form': function(e) {
             e.preventDefault(); // no page refresh
-            var playerName = e.target.playerName.value,
-                currentUserId = Meteor.userId();
-            PlayerList.insert({
-                name: playerName,
-                score: 0,
-                createdBy: currentUserId
-            });
+            var playerNameVar = e.target.playerName.value;
+            Meteor.call('insertPlayerData', playerNameVar);
         }
     });
 }
 
-PlayerList = new Mongo.Collection('players');
-
 if (Meteor.isServer) {
+
     Meteor.publish('thePlayers', function() {
         var currentUserId = this.userId;
-        return PlayerList.find({createdBy: currentUserId});
+        return PlayersList.find({createdBy: currentUserId});
+    });
+
+    Meteor.methods({
+        insertPlayerData: function(playerNameVar) {
+            var currentUserId = Meteor.userId();
+            PlayersList.insert({
+                name: playerNameVar,
+                score: 0,
+                createdBy: currentUserId
+            });
+        },
+        removePlayerData: function(selectedPlayer) {
+            PlayersList.remove({
+                _id: selectedPlayer,
+                createdBy: currentUserId
+            });
+        },
+        modifyPlayerScore: function(selectedPlayer, scoreValue) {
+            var currentUserId = Meteor.userId();
+            PlayersList.update( {_id: selectedPlayer, createdBy: currentUserId},
+                                { $inc: {score: scoreValue} }
+            );
+        }
     });
 }
 
