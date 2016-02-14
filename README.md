@@ -1,2 +1,2 @@
-# reservation-service
-Real-time reservation service
+# Leaderboard
+Meteor Leaderboard app
